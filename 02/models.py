@@ -36,19 +36,6 @@ def clones(module, N):
 # Problem 1
 class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities.
   def __init__(self, emb_size, hidden_size, seq_len, batch_size, vocab_size, num_layers, dp_keep_prob):
-    """
-    emb_size:     The numvwe of units in the input embeddings
-    hidden_size:  The number of hidden units per layer
-    seq_len:      The length of the input sequences
-    vocab_size:   The number of tokens in the vocabulary (10,000 for Penn TreeBank)
-    num_layers:   The depth of the stack (i.e. the number of hidden layers at 
-                  each time-step)
-    dp_keep_prob: The probability of *not* dropping out units in the 
-                  non-recurrent connections.
-                  Do not apply dropout on recurrent connections.
-    """
-    super(RNN, self).__init__()
-
     # TODO ========================
     # Initialization of the parameters of the recurrent and fc layers. 
     # Your implementation should support any number of stacked hidden layers 
@@ -63,11 +50,84 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     # for Pytorch to recognize these parameters as belonging to this nn.Module 
     # and compute their gradients automatically. You're not obligated to use the
     # provided clones function.
+    """
+    emb_size:     The numvwe of units in the input embeddings
+    hidden_size:  The number of hidden units per layer
+    seq_len:      The length of the input sequences
+    vocab_size:   The number of tokens in the vocabulary (10,000 for Penn TreeBank)
+    num_layers:   The depth of the stack (i.e. the number of hidden layers at 
+                  each time-step)
+    dp_keep_prob: The probability of *not* dropping out units in the 
+                  non-recurrent connections.
+                  Do not apply dropout on recurrent connections.
+    """
+    super(RNN, self).__init__()
+    
+    # Parameters
+    self.emb_size = emb_size
+    self.hidden_size = hidden_size
+    self.seq_len = seq_len
+    self.batch_size = batch_size
+    self.vocab_size = vocab_size
+    self.num_layers = num_layers
+    self.dp_keep_prob = dp_keep_prob
+    
+#     # RNN Parameters :
+#     W_x = nn.ParameterList([nn.Parameter(torch.Tensor(hidden_size, emb_size))])
+#     W_x.extend([nn.Parameter(torch.Tensor(hidden_size, hidden_size)) for _ in range(num_layers-1)])
+#     W_h = nn.ParameterList([nn.Parameter(torch.Tensor(hidden_size, hidden_size)) for _ in range(num_layers)])
+#     W_y = nn.Parameter(torch.Tensor(vocab_size, hidden_size))
+    
+#     b_h = nn.ParameterList([nn.Parameter(torch.Tensor(hidden_size)) for _ in range(num_layers)])
+#     b_y = nn.Parameter(torch.Tensor(vocab_size))
+    
+#     self.weights = [W_x, W_h, W_y]
+#     self.bias = [b_h, b_y]
+
+    # RNN Layer : 
+    first_rnn = nn.Linear(self.emb_size + self.hidden_size, self.hidden_size)
+    self.recurrent_layers = nn.ModuleList([first_rnn])
+    other_rnn = nn.Linear(2*self.hidden_size, self.hidden_size)
+    self.recurrent_layers.extend(clones(other_rnn, self.num_layers-1))
+        
+    # Word Embedding Layer : 
+    self.embedding = nn.Embedding(num_embeddings = vocab_size, embedding_dim = emb_size)
+    
+    # FC Layers and Dropout Layers :
+    self.linear_layers = clones(nn.Linear(hidden_size, hidden_size), num_layers-1)
+    self.linear_layers.append(nn.Linear(hidden_size, vocab_size))
+    
+    self.dropout_layers = clones(nn.Dropout(p = 1-dp_keep_prob), num_layers)
+    
+    # Hidden layers coefficient: 
+    #self.hidden_layers = torch.Tensor(self.num_layers, self.batch_size, self.hidden_size)
+
+    
 
   def init_weights_uniform(self):
     # TODO ========================
     # Initialize all the weights uniformly in the range [-0.1, 0.1]
     # and all the biases to 0 (in place)
+    for name, param in self.recurrent_layers.named_parameters():
+        if name == 'weight':
+            nn.init.uniform(param, -0.1, 0.1)
+        else:
+            nn.init.constant(param, 0)
+    
+    for name, param in self.linear_layers.named_parameters():
+        if name == 'weight':
+            nn.init.uniform(param, -0.1, 0.1)
+        else:
+            nn.init.constant(param, 0)
+#     for i in range(self.num_layers):
+#         nn.init.uniform_(self.weights[0][i], -0.1, 0.1)
+#         nn.init.uniform_(self.weights[1][i], -0.1, 0.1)
+#         nn.init.constant_(self.bias[0][i], 0)
+        
+#     nn.init.uniform_(self.weights[2], -0.1, 0.1)
+#     nn.init.constant_(self.bias[1], 0)
+    
+    
 
   def init_hidden(self):
     # TODO ========================
@@ -75,7 +135,9 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
     """
     This is used for the first mini-batch in an epoch, only.
     """
-    return # a parameter tensor of shape (self.num_layers, self.batch_size, self.hidden_size)
+    #nn.init.constant_(self.hidden_layers, 0)
+    return nn.init.constant_(torch.Tensor(self.num_layers, self.batch_size, self.hidden_size), 0)
+    # a parameter tensor of shape (self.num_layers, self.batch_size, self.hidden_size)
 
   def forward(self, inputs, hidden):
     # TODO ========================
@@ -113,7 +175,33 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
               if you are curious.
                     shape: (num_layers, batch_size, hidden_size)
     """
+    if inputs.is_cuda:
+        device = inputs.get_device()
+    else:
+        device = torch.device("cpu")
+    
+    hidden = hidden.to(device)
+    
+    emb_inputs = self.embedding(inputs)
+    logits = torch.Tensor(self.seq_len, self.batch_size, self.vocab_size).to(device)
+    
+    for seq in range(self.seq_len):
+        
+        hidden[0] = self.recurrent_layers[0](torch.cat([hidden[0],emb_inputs[seq]], 1))
+        outputs = self.dropout_layers[0](hidden[0])
+        outputs = self.linear_layers[0](outputs)
+        if self.num_layers == 1:
+            logits[seq] = outputs
+        
+        for l in range(1,self.num_layers):    
+            hidden[l] = self.recurrent_layers[l](torch.cat([hidden[l],outputs], 1))
+            outputs = self.dropout_layers[l](hidden[l])
+            if l == self.num_layers-1:
+                logits[seq] = self.linear_layers[l](outputs)
+            else:
+                outputs = self.linear_layers[l](outputs)
     return logits.view(self.seq_len, self.batch_size, self.vocab_size), hidden
+
 
   def generate(self, input, hidden, generated_seq_len):
     # TODO ========================
@@ -140,7 +228,16 @@ class RNN(nn.Module): # Implement a stacked vanilla RNN with Tanh nonlinearities
         - Sampled sequences of tokens
                     shape: (generated_seq_len, batch_size)
     """
-   
+    samples = torch.Tensor(generated_seq_len, batch_size)
+    samples[0] = self.embedding(input) 
+    for seq in range(generated_seq_len):
+        for l in range(self.num_layers):
+            hidden[l] = self.recurrent_layers[l](torch.cat([hidden[l],samples[seq]], 0))
+            if l < self.num_layers-1:
+                samples[seq] = self.dropout_layers[l](hidden[l])
+            samples[seq] = self.linear_layers[l](samples[seq])
+        if seq < generated_seq_len-1:
+            samples[seq+1] = samples[seq]
     return samples
 
 
@@ -157,6 +254,7 @@ class GRU(nn.Module): # Implement a stacked GRU RNN
 
   def init_weights_uniform(self):
     # TODO ========================
+    return "TEMPORARY"
 
   def init_hidden(self):
     # TODO ========================
@@ -254,7 +352,7 @@ class MultiHeadedAttention(nn.Module):
         
     def forward(self, query, key, value, mask=None):
         # TODO: implement the masked multi-head attention.
-        # query, key, and value all have size: (batch_size, seq_len, self.n_units, self.d_k)
+        # query, key, and value all have size: (batch_size, seq_len, self.n_units)
         # mask has size: (batch_size, seq_len, seq_len)
         # As described in the .tex, apply input masking to the softmax 
         # generating the "attention values" (i.e. A_i in the .tex)
