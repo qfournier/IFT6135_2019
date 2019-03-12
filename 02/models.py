@@ -87,23 +87,19 @@ class RNN(nn.Module
             num_embeddings=vocab_size, embedding_dim=emb_size)
 
         # FC Layers :
-        # hidden_output = nn.Linear(hidden_size, hidden_size)
         output = nn.Linear(hidden_size, vocab_size)
-        # self.linear_layers = clones(hidden_output, num_layers - 1)
-        # self.linear_layers.append(output)
         self.linear_layers = nn.ModuleList([output])
 
         # Dropout Layers :
-        dropout = nn.Dropout(p=1 - dp_keep_prob)
-        self.dropout_layers = clones(dropout, num_layers)
+        dropout = nn.Dropout(p=(1 - dp_keep_prob))
+        self.dropout_layers = clones(dropout, num_layers + 1)
 
         # Hidden layers coefficient:
         self.hidden_layers = torch.Tensor(self.num_layers, self.batch_size,
                                           self.hidden_size)
-        # self.hidden_layers.requires_grad_()
 
         # Activation function
-        self.activation = nn.ReLU()
+        self.recurrent_activation = nn.Tanh()
 
     def init_weights_uniform(self):
         # TODO ========================
@@ -140,31 +136,28 @@ class RNN(nn.Module
         # RNN. For a stacked RNN, the hidden states of the l-th layer are used as
         # inputs to to the {l+1}-st layer (taking the place of the input sequence).
         """
-    Arguments:
-        - inputs: A mini-batch of input sequences, composed of integers that 
-                    represent the index of the current token(s) in the vocabulary.
-                        shape: (seq_len, batch_size)
-        - hidden: The initial hidden states for every layer of the stacked RNN.
-                        shape: (num_layers, batch_size, hidden_size)
+        Arguments:
+            - inputs: A mini-batch of input sequences, composed of integers that 
+                        represent the index of the current token(s) in the vocabulary.
+                            shape: (seq_len, batch_size)
+            - hidden: The initial hidden states for every layer of the stacked RNN.
+                            shape: (num_layers, batch_size, hidden_size)
 
-    Returns:
-        - Logits for the softmax over output tokens at every time-step.
-              **Do NOT apply softmax to the outputs!**
-              Pytorch's CrossEntropyLoss function (applied in ptb-lm.py) does 
-              this computation implicitly.
-                    shape: (seq_len, batch_size, vocab_size)
-        - The final hidden states for every layer of the stacked RNN.
-              These will be used as the initial hidden states for all the 
-              mini-batches in an epoch, except for the first, where the return 
-              value of self.init_hidden will be used.
-              See the repackage_hiddens function in ptb-lm.py for more details, 
-              if you are curious.
-                    shape: (num_layers, batch_size, hidden_size)
-    """
-        if inputs.is_cuda:
-            device = inputs.get_device()
-        else:
-            device = torch.device("cpu")
+        Returns:
+            - Logits for the softmax over output tokens at every time-step.
+                  **Do NOT apply softmax to the outputs!**
+                  Pytorch's CrossEntropyLoss function (applied in ptb-lm.py) does 
+                  this computation implicitly.
+                        shape: (seq_len, batch_size, vocab_size)
+            - The final hidden states for every layer of the stacked RNN.
+                  These will be used as the initial hidden states for all the 
+                  mini-batches in an epoch, except for the first, where the return 
+                  value of self.init_hidden will be used.
+                  See the repackage_hiddens function in ptb-lm.py for more details, 
+                  if you are curious.
+                        shape: (num_layers, batch_size, hidden_size)
+        """
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # hidden = hidden.to(device)
         self.hidden_layers = hidden.to(device)
@@ -176,20 +169,21 @@ class RNN(nn.Module
         update_logits = []
         for timestep in range(self.seq_len):
             update_hidden = []
-            concat = torch.cat([self.hidden_layers[0], emb_inputs[timestep]],
-                               1)
-            pre_activation = self.recurrent_layers[0](concat)
-            activation = self.activation(pre_activation)
-            output = self.dropout_layers[0](activation)
 
-            update_hidden.append(output)
+            dropout_emb = self.dropout_layers[0](emb_inputs[timestep])
+            concat = torch.cat([self.hidden_layers[0], dropout_emb], 1)
+            pre_activation = self.recurrent_layers[0](concat)
+            activation = self.recurrent_activation(pre_activation)
+            output = self.dropout_layers[1](activation)
+
+            update_hidden.append(activation)
 
             for l in range(1, self.num_layers):
                 concat = torch.cat([self.hidden_layers[l], output], 1)
                 pre_activation = self.recurrent_layers[l](concat)
-                activation = self.activation(pre_activation)
-                output = self.dropout_layers[l](activation)
-                update_hidden.append(output)
+                activation = self.recurrent_activation(pre_activation)
+                output = self.dropout_layers[l + 1](activation)
+                update_hidden.append(activation)
 
             update_logits.append(self.linear_layers[0](output))
             self.hidden_layers = torch.stack(update_hidden)
@@ -211,18 +205,18 @@ class RNN(nn.Module
         # function here in order to compute the parameters of the categorical
         # distributions to be sampled from at each time-step.
         """
-    Arguments:
-        - input: A mini-batch of input tokens (NOT sequences!)
-                        shape: (batch_size)
-        - hidden: The initial hidden states for every layer of the stacked RNN.
-                        shape: (num_layers, batch_size, hidden_size)
-        - generated_seq_len: The length of the sequence to generate.
-                       Note that this can be different than the length used 
-                       for training (self.seq_len)
-    Returns:
-        - Sampled sequences of tokens
-                    shape: (generated_seq_len, batch_size)
-    """
+        Arguments:
+            - input: A mini-batch of input tokens (NOT sequences!)
+                            shape: (batch_size)
+            - hidden: The initial hidden states for every layer of the stacked RNN.
+                            shape: (num_layers, batch_size, hidden_size)
+            - generated_seq_len: The length of the sequence to generate.
+                           Note that this can be different than the length used 
+                           for training (self.seq_len)
+        Returns:
+            - Sampled sequences of tokens
+                        shape: (generated_seq_len, batch_size)
+        """
         samples = torch.Tensor(generated_seq_len, batch_size)
         samples[0] = self.embedding(input)
         for seq in range(generated_seq_len):
