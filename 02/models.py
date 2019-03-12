@@ -87,8 +87,7 @@ class RNN(nn.Module
             num_embeddings=vocab_size, embedding_dim=emb_size)
 
         # FC Layers :
-        output = nn.Linear(hidden_size, vocab_size)
-        self.linear_layers = nn.ModuleList([output])
+        self.linear_layer = nn.Linear(hidden_size, vocab_size)
 
         # Dropout Layers :
         dropout = nn.Dropout(p=(1 - dp_keep_prob))
@@ -101,16 +100,24 @@ class RNN(nn.Module
         # Activation function
         self.recurrent_activation = nn.Tanh()
 
+        # Initialize weights for he embedding and output layer
+        self.init_weights_uniform()
+
     def init_weights_uniform(self):
         # TODO ========================
         # Initialize all the weights uniformly in the range [-0.1, 0.1]
         # and all the biases to 0 (in place)
-        for name, param in self.recurrent_layers.named_parameters(
-        ), self.linear_layers.named_parameters():
+        print("Initialize embedding layer")
+        for name, param in self.embedding.named_parameters():
             if name == 'weight':
-                nn.init.uniform(param, -0.1, 0.1)
+                nn.init.uniform_(param, -0.1, 0.1)
+
+        print("Initialize output layer")
+        for name, param in self.linear_layer.named_parameters():
+            if name == 'weight':
+                nn.init.uniform_(param, -0.1, 0.1)
             elif name == 'bias':
-                nn.init.constant(param, 0)
+                nn.init.constant_(param, 0)
 
     def init_hidden(self):
         # TODO ========================
@@ -118,9 +125,7 @@ class RNN(nn.Module
         """
         This is used for the first mini-batch in an epoch, only.
         """
-        #nn.init.constant_(self.hidden_layers, 0)
         return nn.init.constant_(self.hidden_layers, 0)
-        # a parameter tensor of shape (self.num_layers, self.batch_size, self.hidden_size)
 
     def forward(self, inputs, hidden):
         # TODO ========================
@@ -159,7 +164,6 @@ class RNN(nn.Module
         """
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # hidden = hidden.to(device)
         self.hidden_layers = hidden.to(device)
 
         emb_inputs = self.embedding(inputs)
@@ -185,7 +189,7 @@ class RNN(nn.Module
                 output = self.dropout_layers[l + 1](activation)
                 update_hidden.append(activation)
 
-            update_logits.append(self.linear_layers[0](output))
+            update_logits.append(self.linear_layer(output))
             self.hidden_layers = torch.stack(update_hidden)
 
         logits = torch.stack(update_logits)
@@ -225,7 +229,7 @@ class RNN(nn.Module
                     [hidden[l], samples[seq]], 0))
                 if l < self.num_layers - 1:
                     samples[seq] = self.dropout_layers[l](hidden[l])
-                samples[seq] = self.linear_layers[l](samples[seq])
+                samples[seq] = self.linear_layer(samples[seq])
             if seq < generated_seq_len - 1:
                 samples[seq + 1] = samples[seq]
         return samples
