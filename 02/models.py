@@ -216,17 +216,18 @@ class RNN(nn.Module
             - Sampled sequences of tokens
                         shape: (generated_seq_len, batch_size)
         """
-        samples = torch.Tensor(generated_seq_len, batch_size)
-        samples[0] = self.embedding(input)
-        for seq in range(generated_seq_len):
-            for l in range(self.num_layers):
-                hidden[l] = self.recurrent_layers[l](torch.cat(
-                    [hidden[l], samples[seq]], 0))
-                if l < self.num_layers - 1:
-                    samples[seq] = self.dropout_layers[l](hidden[l])
-                samples[seq] = self.linear_layer(samples[seq])
-            if seq < generated_seq_len - 1:
-                samples[seq + 1] = samples[seq]
+        # TODO ========================
+        # samples = torch.Tensor(generated_seq_len, batch_size)
+        # samples[0] = self.embedding(input)
+        # for seq in range(generated_seq_len):
+        #     for l in range(self.num_layers):
+        #         hidden[l] = self.recurrent_layers[l](torch.cat(
+        #             [hidden[l], samples[seq]], 0))
+        #         if l < self.num_layers - 1:
+        #             samples[seq] = self.dropout_layers[l](hidden[l])
+        #         samples[seq] = self.linear_layer(samples[seq])
+        #     if seq < generated_seq_len - 1:
+        #         samples[seq + 1] = samples[seq]
         return samples
 
 
@@ -253,14 +254,14 @@ class GRU(nn.Module):  # Implement a stacked GRU RNN
 
         ## Reset gates :
         first_reset_gate = nn.Linear(self.emb_size + self.hidden_size,
-                                self.hidden_size)
+                                     self.hidden_size)
         others_reset = nn.Linear(2 * self.hidden_size, self.hidden_size)
         self.reset_gates = nn.ModuleList([first_reset_gate])
         self.reset_gates.extend(clones(others_reset, self.num_layers - 1))
 
         ## Forget gates :
         first_forget_gate = nn.Linear(self.emb_size + self.hidden_size,
-                                self.hidden_size)
+                                      self.hidden_size)
         others_forget = nn.Linear(2 * self.hidden_size, self.hidden_size)
         self.forget_gates = nn.ModuleList([first_forget_gate])
         self.forget_gates.extend(clones(others_forget, self.num_layers - 1))
@@ -333,12 +334,14 @@ class GRU(nn.Module):  # Implement a stacked GRU RNN
             forget_preactivation = self.forget_gates[0](concat)
             forget = self.gate_activation(forget_preactivation)
 
-            concat_with_r = torch.cat([reset * self.hidden_layers[0], dropout_emb], 1)
+            concat_with_r = torch.cat(
+                [reset * self.hidden_layers[0], dropout_emb], 1)
 
             pre_activation_tilde = self.recurrent_layers[0](concat_with_r)
             activation_tilde = self.recurrent_activation(pre_activation_tilde)
 
-            activation = (torch.ones(self.hidden_size).to(device) - forget) * self.hidden_layers[0] + forget * activation_tilde
+            activation = (torch.ones(self.hidden_size).to(device) - forget
+                          ) * self.hidden_layers[0] + forget * activation_tilde
 
             output = self.dropout_layers[1](activation)
 
@@ -352,17 +355,20 @@ class GRU(nn.Module):  # Implement a stacked GRU RNN
                 forget_preactivation = self.forget_gates[l](concat)
                 forget = self.gate_activation(forget_preactivation)
 
-                concat_with_r = torch.cat([reset * self.hidden_layers[l], output], 1)
+                concat_with_r = torch.cat(
+                    [reset * self.hidden_layers[l], output], 1)
 
                 pre_activation_tilde = self.recurrent_layers[l](concat_with_r)
-                activation_tilde = self.recurrent_activation(pre_activation_tilde)
+                activation_tilde = self.recurrent_activation(
+                    pre_activation_tilde)
 
-                activation = (torch.ones(self.hidden_size).to(device) - forget) * self.hidden_layers[l] + forget * activation_tilde
+                activation = (
+                    torch.ones(self.hidden_size).to(device) -
+                    forget) * self.hidden_layers[l] + forget * activation_tilde
 
-                output = self.dropout_layers[l+1](activation)
+                output = self.dropout_layers[l + 1](activation)
 
                 update_hidden.append(activation)
-
 
             update_logits.append(self.linear_layer(output))
             self.hidden_layers = torch.stack(update_hidden)
