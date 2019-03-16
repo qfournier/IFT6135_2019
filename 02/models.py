@@ -450,26 +450,59 @@ class MultiHeadedAttention(nn.Module):
         dropout: probability of DROPPING units
         """
         super(MultiHeadedAttention, self).__init__()
-        # This sets the size of the keys, values, and queries (self.d_k) to all
+        # This sets the size of the keys, values, and queries (self.d_k) to all 
         # be equal to the number of output units divided by the number of heads.
         self.d_k = n_units // n_heads
         # This requires the number of n_heads to evenly divide n_units.
-        assert n_units % n_heads == 0
-        self.n_units = n_units
+        try:
+            
+            assert n_units % n_heads == 0
+        except:
+            print("try")
 
         # TODO: create/initialize any necessary parameters or layers
-        # Note: the only Pytorch modules you are allowed to use are nn.Linear
+        # Note: the only Pytorch modules you are allowed to use are nn.Linear 
         # and nn.Dropout
-
+        ######################
+        self.n_units = n_units 
+        self.n_heads = n_heads
+        self.linears = clones(nn.Linear(n_units, n_units), 4)
+        self.attn = None
+        self.dropout = nn.Dropout(p=dropout)
+        ######################
+        
     def forward(self, query, key, value, mask=None):
         # TODO: implement the masked multi-head attention.
-        # query, key, and value all have size: (batch_size, seq_len, self.n_units)
+        # query, key, and value all have size: (batch_size, seq_len, self.n_units, self.d_k)
         # mask has size: (batch_size, seq_len, seq_len)
-        # As described in the .tex, apply input masking to the softmax
+        # As described in the .tex, apply input masking to the softmax 
         # generating the "attention values" (i.e. A_i in the .tex)
         # Also apply dropout to the attention values.
+        ######################
 
-        return  # size: (batch_size, seq_len, self.n_units)
+        if mask is not None:
+            mask = mask.unsqueeze(1)
+        nbatches = query.size(0)
+
+        query, key, value = \
+            [l(x).view(nbatches, -1, self.n_heads, self.d_k).transpose(1, 2)
+             for l, x in zip(self.linears, (query, key, value))]
+        
+
+        scores = torch.matmul(query, key.transpose(-2, -1)) \
+             / math.sqrt(self.d_k)
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, -1e9)
+        p_attn = F.softmax(scores, dim = -1)
+        if self.dropout is not None:
+            p_attn = self.dropout(p_attn)
+        x = torch.matmul(p_attn, value)
+        self.attn =  p_attn
+
+        x = x.transpose(1, 2).contiguous() \
+             .view(nbatches, -1, self.n_heads * self.d_k)
+        return self.linears[-1](x)
+        ######################
 
 
 #----------------------------------------------------------------------------------
