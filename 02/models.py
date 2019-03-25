@@ -408,6 +408,79 @@ class GRU(nn.Module):  # Implement a stacked GRU RNN
 
     def generate(self, input, hidden, generated_seq_len):
         # TODO ========================
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.hidden_layers = hidden.to(device)
+
+        samples = torch.zeros(self.batch_size, generated_seq_len).to(device)
+
+        for i, s in enumerate(input):
+            samples[i][0] = s
+
+        emb_sample = self.embedding(
+            torch.LongTensor(input + [0] * (self.batch_size - len(input))))
+
+        update_logits = []
+        for timestep in range(generated_seq_len - 1):
+            update_hidden = []
+
+            dropout_emb = emb_sample
+
+            concat = torch.cat([self.hidden_layers[0], dropout_emb], 1)
+
+            reset_preactivation = self.reset_gates[0](concat)
+            reset = self.gate_activation(reset_preactivation)
+            forget_preactivation = self.forget_gates[0](concat)
+            forget = self.gate_activation(forget_preactivation)
+
+            concat_with_r = torch.cat(
+                [reset * self.hidden_layers[0], dropout_emb], 1)
+
+            pre_activation_tilde = self.recurrent_layers[0](concat_with_r)
+            activation_tilde = self.recurrent_activation(pre_activation_tilde)
+
+            activation = (torch.ones(self.hidden_size).to(device) - forget
+                          ) * self.hidden_layers[0] + forget * activation_tilde
+
+            output = activation
+
+            update_hidden.append(activation)
+
+            for l in range(1, self.num_layers):
+                concat = torch.cat([self.hidden_layers[l], output], 1)
+
+                reset_preactivation = self.reset_gates[l](concat)
+                reset = self.gate_activation(reset_preactivation)
+                forget_preactivation = self.forget_gates[l](concat)
+                forget = self.gate_activation(forget_preactivation)
+
+                concat_with_r = torch.cat(
+                    [reset * self.hidden_layers[l], output], 1)
+
+                pre_activation_tilde = self.recurrent_layers[l](concat_with_r)
+                activation_tilde = self.recurrent_activation(
+                    pre_activation_tilde)
+
+                activation = (
+                    torch.ones(self.hidden_size).to(device) -
+                    forget) * self.hidden_layers[l] + forget * activation_tilde
+
+                output = activation
+
+                update_hidden.append(activation)
+
+            logit = self.linear_layer(output)
+            update_logits.append(logit)
+
+            self.hidden_layers = torch.stack(update_hidden)
+
+            prediction = F.softmax(logit)
+            word_samples = torch.distributions.Categorical(prediction).sample()
+            for i, s in enumerate(word_samples):
+                samples[i][timestep + 1] = s
+
+            emb_sample = self.embedding(word_samples)
+            self.hidden_layers = torch.stack(update_hidden)
+
         return samples
 
 
