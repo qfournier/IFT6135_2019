@@ -494,9 +494,8 @@ np.save(lc_path, {'train_ppls':train_ppls,
 # To load these, run 
 # >>> x = np.load(lc_path)[()]
 # You will need these values for plotting learning curves (Problem 4)
-if args.num_epochs == 0:
-    hidden = model.init_hidden()
-    hidden = hidden.to(device)
+hidden = model.init_hidden()
+hidden = hidden.to(device)
 
 start = [word_to_id["the"]]
 start.append(word_to_id["a"])
