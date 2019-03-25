@@ -512,14 +512,18 @@ hidden = repackage_hidden(hidden)
 short_samples = model.generate(start, hidden, args.seq_len)
 
 print("-" * 20 + "Short sentences" + "-" * 20)
-for sample in short_samples.to("cpu"):
+for i, sample in enumerate(short_samples.to("cpu"), 1):
     sentence = " ".join([id_2_word[int(word)] for word in sample])
     print(sentence, end="\n\n")
+    if i>=10:
+       break
 
 hidden = repackage_hidden(hidden)
 long_samples = model.generate(start, hidden, 2 * args.seq_len)
 
 print("-" * 20 + "Long sentences" + "-" * 20)
-for sample in long_samples.to("cpu"):
+for i, sample in enumerate(long_samples.to("cpu"), 1):
     sentence = " ".join([id_2_word[int(word)] for word in sample])
     print(sentence, end="\n\n")
+    if i>=10:
+       break

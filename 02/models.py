@@ -219,13 +219,15 @@ class RNN(nn.Module
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.hidden_layers = hidden.to(device)
 
-        samples = torch.zeros(self.batch_size, generated_seq_len).to(device)
+        samples = torch.zeros(self.batch_size, generated_seq_len)
 
         for i, s in enumerate(input):
             samples[i][0] = s
 
+        samples.to(device)
+
         emb_sample = self.embedding(
-            torch.LongTensor(input + [0] * (self.batch_size - len(input))))
+            torch.LongTensor(input + [0] * (self.batch_size - len(input))).to(device))
 
         update_logits = []
         for timestep in range(generated_seq_len - 1):
@@ -251,9 +253,10 @@ class RNN(nn.Module
 
             prediction = F.softmax(logit)
             word_samples = torch.distributions.Categorical(prediction).sample()
+            samples.to("cpu")
             for i, s in enumerate(word_samples):
                 samples[i][timestep + 1] = s
-
+            samples.to(device)
             emb_sample = self.embedding(word_samples)
             self.hidden_layers = torch.stack(update_hidden)
 
@@ -411,13 +414,15 @@ class GRU(nn.Module):  # Implement a stacked GRU RNN
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.hidden_layers = hidden.to(device)
 
-        samples = torch.zeros(self.batch_size, generated_seq_len).to(device)
+        samples = torch.zeros(self.batch_size, generated_seq_len)
 
         for i, s in enumerate(input):
             samples[i][0] = s
 
+        samples = samples.to(device)
+
         emb_sample = self.embedding(
-            torch.LongTensor(input + [0] * (self.batch_size - len(input))))
+            torch.LongTensor(input + [0] * (self.batch_size - len(input))).to(device))
 
         update_logits = []
         for timestep in range(generated_seq_len - 1):
@@ -475,9 +480,10 @@ class GRU(nn.Module):  # Implement a stacked GRU RNN
 
             prediction = F.softmax(logit)
             word_samples = torch.distributions.Categorical(prediction).sample()
+            samples = samples.to("cpu")
             for i, s in enumerate(word_samples):
                 samples[i][timestep + 1] = s
-
+            samples = samples.to(device)
             emb_sample = self.embedding(word_samples)
             self.hidden_layers = torch.stack(update_hidden)
 
