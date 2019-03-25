@@ -1,0 +1,187 @@
+
+########## Setting Up Experiment ######################
+
+Putting log in RNN_ADAM_model=RNN_optimizer=ADAM_initial_lr=0.001_batch_size=256_seq_len=10_hidden_size=1000_num_layers=3_dp_keep_prob=0.3_num_epochs=10_0
+Using the GPU
+Loading data from data
+  vocabulary size: 10000
+Initialize embedding layer
+Initialize output layer
+
+########## Running Main Loop ##########################
+
+EPOCH 0 ------------------
+step: 10	loss: 911.8531847000122	speed (wps):18112.170434578857
+step: 46	loss: 3401.9448041915894	speed (wps):19548.305246595326
+step: 82	loss: 5770.876297950745	speed (wps):19741.424744463493
+step: 118	loss: 8086.225080490112	speed (wps):19726.856623340085
+step: 154	loss: 10391.710443496704	speed (wps):19786.845929826468
+step: 190	loss: 12660.86835861206	speed (wps):19802.664832776605
+step: 226	loss: 14921.536898612976	speed (wps):19857.24824259983
+step: 262	loss: 17148.507161140442	speed (wps):19907.619925648563
+step: 298	loss: 19386.121864318848	speed (wps):20316.33273471278
+step: 334	loss: 21607.459597587585	speed (wps):20815.251007892162
+epoch: 0	train ppl: 619.0830885624686	val ppl: 339.2421149594538	best val: 339.2421149594538	time (s) spent in epoch: 45.8636691570282
+
+EPOCH 1 ------------------
+step: 10	loss: 676.5450191497803	speed (wps):23568.033519590976
+step: 46	loss: 2867.0859146118164	speed (wps):25134.99936597037
+step: 82	loss: 5059.9292278289795	speed (wps):25368.791284190895
+step: 118	loss: 7235.560193061829	speed (wps):24682.124205356606
+step: 154	loss: 9409.507746696472	speed (wps):23510.154213659847
+step: 190	loss: 11573.340139389038	speed (wps):22816.359073843432
+step: 226	loss: 13734.801797866821	speed (wps):22524.125547721625
+step: 262	loss: 15872.896184921265	speed (wps):22309.434987692028
+step: 298	loss: 18029.175820350647	speed (wps):22139.273850906728
+step: 334	loss: 20174.328050613403	speed (wps):22008.1173392102
+epoch: 1	train ppl: 410.9971961992858	val ppl: 289.64673845091744	best val: 289.64673845091744	time (s) spent in epoch: 44.647302865982056
+
+EPOCH 2 ------------------
+step: 10	loss: 656.9140005111694	speed (wps):19844.429016258233
+step: 46	loss: 2788.33553314209	speed (wps):20567.889694912086
+step: 82	loss: 4925.05615234375	speed (wps):20696.6076271387
+step: 118	loss: 7049.1467571258545	speed (wps):20832.59794642143
+step: 154	loss: 9175.554280281067	speed (wps):20906.74491884268
+step: 190	loss: 11289.291954040527	speed (wps):20883.222867058394
+step: 226	loss: 13402.580742835999	speed (wps):20896.123405229555
+step: 262	loss: 15495.193305015564	speed (wps):21131.70041082111
+step: 298	loss: 17606.21991634369	speed (wps):21212.232167301303
+step: 334	loss: 19714.537301063538	speed (wps):21141.249772676478
+epoch: 2	train ppl: 359.2730148962083	val ppl: 263.7604426699734	best val: 263.7604426699734	time (s) spent in epoch: 46.22560715675354
+
+EPOCH 3 ------------------
+step: 10	loss: 645.4766082763672	speed (wps):19061.932063878474
+step: 46	loss: 2739.0216588974	speed (wps):20634.824389882688
+step: 82	loss: 4841.060991287231	speed (wps):20788.348119744223
+step: 118	loss: 6928.91667842865	speed (wps):20764.47472606919
+step: 154	loss: 9021.230573654175	speed (wps):20771.065347590516
+step: 190	loss: 11103.937954902649	speed (wps):20811.292709944846
+step: 226	loss: 13186.63824558258	speed (wps):20846.39927445387
+step: 262	loss: 15249.512753486633	speed (wps):20842.398542560404
+step: 298	loss: 17331.13399028778	speed (wps):20835.007205804806
+step: 334	loss: 19409.924631118774	speed (wps):20823.72123467912
+epoch: 3	train ppl: 328.2850728791248	val ppl: 250.29545334254541	best val: 250.29545334254541	time (s) spent in epoch: 46.814159631729126
+
+EPOCH 4 ------------------
+step: 10	loss: 637.4546670913696	speed (wps):19105.42353744635
+step: 46	loss: 2706.950011253357	speed (wps):21745.081577882058
+step: 82	loss: 4786.862506866455	speed (wps):21814.192780909412
+step: 118	loss: 6853.376951217651	speed (wps):21475.281505581454
+step: 154	loss: 8920.532999038696	speed (wps):21278.05211206839
+step: 190	loss: 10983.552465438843	speed (wps):21167.431295358554
+step: 226	loss: 13045.291862487793	speed (wps):21148.626830233
+step: 262	loss: 15089.173731803894	speed (wps):21106.100544777477
+step: 298	loss: 17153.35781097412	speed (wps):21086.80568575171
+step: 334	loss: 19212.971529960632	speed (wps):21046.139435848323
+epoch: 4	train ppl: 309.54318194411707	val ppl: 239.41121118273114	best val: 239.41121118273114	time (s) spent in epoch: 46.31326770782471
+
+EPOCH 5 ------------------
+step: 10	loss: 631.5388536453247	speed (wps):18758.964727557166
+step: 46	loss: 2687.087001800537	speed (wps):20160.043079792933
+step: 82	loss: 4750.47890663147	speed (wps):20351.4106590789
+step: 118	loss: 6796.261720657349	speed (wps):20455.484344956698
+step: 154	loss: 8844.953670501709	speed (wps):20503.010451559418
+step: 190	loss: 10891.239943504333	speed (wps):20531.040870042933
+step: 226	loss: 12936.611051559448	speed (wps):21004.34760639206
+step: 262	loss: 14965.030550956726	speed (wps):21029.31594897389
+step: 298	loss: 17012.469038963318	speed (wps):21000.453650472304
+step: 334	loss: 19056.186780929565	speed (wps):20993.951042805827
+epoch: 5	train ppl: 295.680318019793	val ppl: 234.47818754057607	best val: 234.47818754057607	time (s) spent in epoch: 46.600218057632446
+
+EPOCH 6 ------------------
+step: 10	loss: 627.3557567596436	speed (wps):19046.126387098284
+step: 46	loss: 2667.010717391968	speed (wps):20362.56720580983
+step: 82	loss: 4719.209198951721	speed (wps):20615.81663255471
+step: 118	loss: 6753.1398820877075	speed (wps):20756.620434775814
+step: 154	loss: 8788.654789924622	speed (wps):20796.861739117405
+step: 190	loss: 10822.206292152405	speed (wps):20782.666823576874
+step: 226	loss: 12853.267140388489	speed (wps):20826.553041732725
+step: 262	loss: 14869.71284866333	speed (wps):20883.82409918083
+step: 298	loss: 16903.656148910522	speed (wps):20904.287034711193
+step: 334	loss: 18936.769433021545	speed (wps):20920.454672825545
+epoch: 6	train ppl: 285.24846342334104	val ppl: 229.65005788562888	best val: 229.65005788562888	time (s) spent in epoch: 46.31565999984741
+
+EPOCH 7 ------------------
+step: 10	loss: 622.3737907409668	speed (wps):20370.317143827393
+step: 46	loss: 2652.1518564224243	speed (wps):20766.486329228403
+step: 82	loss: 4692.690629959106	speed (wps):20917.25896851067
+step: 118	loss: 6715.503649711609	speed (wps):20979.99215938632
+step: 154	loss: 8738.554339408875	speed (wps):21069.0538431671
+step: 190	loss: 10763.183326721191	speed (wps):21114.316490335576
+step: 226	loss: 12783.374743461609	speed (wps):21115.36735000268
+step: 262	loss: 14789.131021499634	speed (wps):21045.88015098618
+step: 298	loss: 16812.77202129364	speed (wps):20992.412721798613
+step: 334	loss: 18837.99757003784	speed (wps):21022.381367102564
+epoch: 7	train ppl: 277.4079019461387	val ppl: 224.72146367602778	best val: 224.72146367602778	time (s) spent in epoch: 46.45905613899231
+
+EPOCH 8 ------------------
+step: 10	loss: 620.4239082336426	speed (wps):19888.246214195413
+step: 46	loss: 2640.26526927948	speed (wps):20860.461275934795
+step: 82	loss: 4672.170524597168	speed (wps):21102.18511157567
+step: 118	loss: 6687.1250677108765	speed (wps):21161.408282332835
+step: 154	loss: 8703.436388969421	speed (wps):21346.482422421086
+step: 190	loss: 10718.3083486557	speed (wps):21675.713144200537
+step: 226	loss: 12733.760476112366	speed (wps):21650.581210204946
+step: 262	loss: 14732.70345211029	speed (wps):21563.209728533904
+step: 298	loss: 16751.09555721283	speed (wps):21526.37017823941
+step: 334	loss: 18767.272601127625	speed (wps):21460.7196826546
+epoch: 8	train ppl: 271.427165046421	val ppl: 233.02713667983858	best val: 224.72146367602778	time (s) spent in epoch: 45.48016905784607
+
+EPOCH 9 ------------------
+step: 10	loss: 619.7239255905151	speed (wps):19289.154344296043
+step: 46	loss: 2627.8081464767456	speed (wps):20749.18622688822
+step: 82	loss: 4651.645746231079	speed (wps):20837.349163881005
+step: 118	loss: 6657.914390563965	speed (wps):20961.917041943365
+step: 154	loss: 8669.78980064392	speed (wps):21061.68476462005
+step: 190	loss: 10677.53044128418	speed (wps):21053.328560478614
+step: 226	loss: 12685.380787849426	speed (wps):21081.0389575524
+step: 262	loss: 14677.45325088501	speed (wps):21117.99582801686
+step: 298	loss: 16689.78683948517	speed (wps):21137.20435075533
+step: 334	loss: 18701.97958946228	speed (wps):21261.20616523802
+epoch: 9	train ppl: 266.2162577737246	val ppl: 227.2551235549045	best val: 224.72146367602778	time (s) spent in epoch: 45.63442826271057
+
+DONE
+
+Saving learning curves to RNN_ADAM_model=RNN_optimizer=ADAM_initial_lr=0.001_batch_size=256_seq_len=10_hidden_size=1000_num_layers=3_dp_keep_prob=0.3_num_epochs=10_0/learning_curves.npy
+--------------------Short sentences--------------------
+the piece practical after the individual supplies of more writers
+
+a reason improved tomorrow in london it could end weakened
+
+an hour the gain of the dutch union <eos> we
+
+he told exploring the way living of it were still
+
+she added with securities and <unk> in a high N
+
+it owner public and mr. boyer and investors changing <unk>
+
+they adopt these best of <unk> are <unk> some role
+
+why dennis packed a publicly ' investment in an earnings
+
+how tired of independent u.s. mr. emergency nor meant his
+
+to warns the laboratory the lawyers over day-to-day <eos> on
+
+--------------------Long sentences--------------------
+the objective conservative company gives his example behaved <unk> change that the pricing for <unk> august and completed that its
+
+a sharp ban in the fate <eos> prices arrived viacom though the fixed-rate york N nov. N <eos> a closing
+
+an breakup does n't raised pretty much of themselves over the local terms of the white insurers that a <unk>
+
+he 's opposing less profitable officials <eos> the the part of the second session in january $ N a share
+
+she had too lower in march <eos> net managers into the campaign showed with premiere divisions of $ N million
+
+it remains among the growth in $ N million <eos> that the dutch holdings sam company is here to the
+
+they recovered <unk> for N bonds showing china would are inspired mrs. robertson for <unk> but last head is the
+
+why give a we have its alleged between the real estate <eos> the world <unk> of example created atlanta where
+
+how assuming undercut compliance <eos> rep. <unk> <unk> funds to employed them the to not the la one jr. the
+
+to pay control <eos> vary estimates by a british u.k. <unk> if over the fears observers are many job to
+

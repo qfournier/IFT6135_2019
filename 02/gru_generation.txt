@@ -1,0 +1,187 @@
+
+########## Setting Up Experiment ######################
+
+Putting log in GRU_ADAM_model=GRU_optimizer=ADAM_initial_lr=0.001_batch_size=256_seq_len=10_hidden_size=1000_num_layers=3_dp_keep_prob=0.3_num_epochs=10_0
+Using the GPU
+Loading data from data
+  vocabulary size: 10000
+Initialize embedding layer
+Initialize output layer
+
+########## Running Main Loop ##########################
+
+EPOCH 0 ------------------
+step: 10	loss: 1066.6807746887207	speed (wps):12948.933658636484
+step: 46	loss: 3520.06121635437	speed (wps):13995.738016037707
+step: 82	loss: 5852.907772064209	speed (wps):14199.283433422079
+step: 118	loss: 8123.212523460388	speed (wps):14277.448003915415
+step: 154	loss: 10360.541334152222	speed (wps):14343.900273658857
+step: 190	loss: 12563.723554611206	speed (wps):14461.844829447355
+step: 226	loss: 14748.829441070557	speed (wps):14507.619119922923
+step: 262	loss: 16899.555621147156	speed (wps):14507.81955251165
+step: 298	loss: 19054.505410194397	speed (wps):14510.697127579979
+step: 334	loss: 21191.269540786743	speed (wps):14505.1293576545
+epoch: 0	train ppl: 541.5476761173159	val ppl: 528.0472569386073	best val: 528.0472569386073	time (s) spent in epoch: 67.03741765022278
+
+EPOCH 1 ------------------
+step: 10	loss: 762.4567031860352	speed (wps):13735.197520883357
+step: 46	loss: 2868.598017692566	speed (wps):14379.776453804225
+step: 82	loss: 4964.005222320557	speed (wps):14765.094174669248
+step: 118	loss: 7037.089529037476	speed (wps):14681.449156944816
+step: 154	loss: 9108.622860908508	speed (wps):14600.466327169894
+step: 190	loss: 11163.898940086365	speed (wps):14552.443879695877
+step: 226	loss: 13214.350371360779	speed (wps):14523.279324106088
+step: 262	loss: 15238.81085395813	speed (wps):14510.83772379703
+step: 298	loss: 17280.093984603882	speed (wps):14483.994176135931
+step: 334	loss: 19315.67340373993	speed (wps):14507.1355107698
+epoch: 1	train ppl: 316.5952067144037	val ppl: 228.1234982953536	best val: 228.1234982953536	time (s) spent in epoch: 66.81673002243042
+
+EPOCH 2 ------------------
+step: 10	loss: 624.5352220535278	speed (wps):13656.973823967914
+step: 46	loss: 2638.1261491775513	speed (wps):14304.936363612915
+step: 82	loss: 4653.767147064209	speed (wps):14387.546617281363
+step: 118	loss: 6650.454115867615	speed (wps):14414.323753030301
+step: 154	loss: 8647.19090461731	speed (wps):14448.720880035973
+step: 190	loss: 10634.24877166748	speed (wps):14461.002525357368
+step: 226	loss: 12613.034691810608	speed (wps):14579.198336136928
+step: 262	loss: 14569.411067962646	speed (wps):14551.74783396521
+step: 298	loss: 16545.736417770386	speed (wps):14521.150858655965
+step: 334	loss: 18519.352917671204	speed (wps):14510.572760804083
+epoch: 2	train ppl: 250.9340785361863	val ppl: 198.41224505537022	best val: 198.41224505537022	time (s) spent in epoch: 66.92198061943054
+
+EPOCH 3 ------------------
+step: 10	loss: 608.2583618164062	speed (wps):13682.50696366568
+step: 46	loss: 2566.6460371017456	speed (wps):14406.003610217025
+step: 82	loss: 4530.541305541992	speed (wps):14447.770564908584
+step: 118	loss: 6473.055176734924	speed (wps):14698.390210947411
+step: 154	loss: 8417.248888015747	speed (wps):14641.581749867759
+step: 190	loss: 10355.290503501892	speed (wps):14628.259882656905
+step: 226	loss: 12285.145678520203	speed (wps):14581.241487579395
+step: 262	loss: 14194.730920791626	speed (wps):14537.097322072765
+step: 298	loss: 16124.83072757721	speed (wps):14534.624332821817
+step: 334	loss: 18054.020624160767	speed (wps):14536.601062000487
+epoch: 3	train ppl: 218.83862059363008	val ppl: 180.48693217663163	best val: 180.48693217663163	time (s) spent in epoch: 66.50299024581909
+
+EPOCH 4 ------------------
+step: 10	loss: 594.2330408096313	speed (wps):14104.865000680693
+step: 46	loss: 2514.496269226074	speed (wps):14459.883195144703
+step: 82	loss: 4442.022032737732	speed (wps):14527.374240887619
+step: 118	loss: 6346.826882362366	speed (wps):14557.148416035301
+step: 154	loss: 8249.784393310547	speed (wps):14550.460848716937
+step: 190	loss: 10149.318041801453	speed (wps):14516.573950835736
+step: 226	loss: 12039.331393241882	speed (wps):14532.97789447119
+step: 262	loss: 13912.093138694763	speed (wps):14632.75566501173
+step: 298	loss: 15806.079440116882	speed (wps):14626.962407072371
+step: 334	loss: 17703.25092315674	speed (wps):14612.889843781566
+epoch: 4	train ppl: 197.2650389409811	val ppl: 168.74574914069177	best val: 168.74574914069177	time (s) spent in epoch: 66.43238162994385
+
+EPOCH 5 ------------------
+step: 10	loss: 584.8265647888184	speed (wps):13994.054904624065
+step: 46	loss: 2472.2394800186157	speed (wps):14437.438537661472
+step: 82	loss: 4369.8871994018555	speed (wps):14448.82650519061
+step: 118	loss: 6241.164126396179	speed (wps):14472.44657790101
+step: 154	loss: 8111.727318763733	speed (wps):14609.906349726853
+step: 190	loss: 9979.050693511963	speed (wps):14567.744000440063
+step: 226	loss: 11838.012747764587	speed (wps):14573.481323834561
+step: 262	loss: 13678.703527450562	speed (wps):14580.925541624416
+step: 298	loss: 15543.133721351624	speed (wps):14581.44976420929
+step: 334	loss: 17410.21197795868	speed (wps):14581.329112591202
+epoch: 5	train ppl: 180.805044844371	val ppl: 158.38169185452708	best val: 158.38169185452708	time (s) spent in epoch: 66.63101172447205
+
+EPOCH 6 ------------------
+step: 10	loss: 576.6222095489502	speed (wps):14203.91116849307
+step: 46	loss: 2435.2414512634277	speed (wps):16959.497901279236
+step: 82	loss: 4303.710017204285	speed (wps):17917.55324351172
+step: 118	loss: 6145.603394508362	speed (wps):18231.872365213
+step: 154	loss: 7987.704434394836	speed (wps):18340.71620465645
+step: 190	loss: 9827.66357421875	speed (wps):18458.88937882253
+step: 226	loss: 11659.267101287842	speed (wps):18590.235498994884
+step: 262	loss: 13470.159621238708	speed (wps):18685.72464989125
+step: 298	loss: 15306.337060928345	speed (wps):18746.03432027742
+step: 334	loss: 17146.850728988647	speed (wps):18799.56971617798
+epoch: 6	train ppl: 167.14188923340828	val ppl: 150.86372896932073	best val: 150.86372896932073	time (s) spent in epoch: 51.63207769393921
+
+EPOCH 7 ------------------
+step: 10	loss: 568.954930305481	speed (wps):18046.662870262127
+step: 46	loss: 2404.045763015747	speed (wps):18951.35045836584
+step: 82	loss: 4247.931709289551	speed (wps):19031.785759672926
+step: 118	loss: 6065.954422950745	speed (wps):19090.33550420593
+step: 154	loss: 7883.429718017578	speed (wps):19117.926895580902
+step: 190	loss: 9696.955857276917	speed (wps):19080.250462102627
+step: 226	loss: 11503.581228256226	speed (wps):19029.15722015597
+step: 262	loss: 13289.776458740234	speed (wps):19022.673925621017
+step: 298	loss: 15102.106728553772	speed (wps):19059.664170614127
+step: 334	loss: 16921.176829338074	speed (wps):19082.59649862653
+epoch: 7	train ppl: 156.39393505051677	val ppl: 147.00198008271292	best val: 147.00198008271292	time (s) spent in epoch: 50.96180820465088
+
+EPOCH 8 ------------------
+step: 10	loss: 563.0340433120728	speed (wps):18178.404305257613
+step: 46	loss: 2378.745164871216	speed (wps):19034.034951568803
+step: 82	loss: 4201.82421207428	speed (wps):19164.12963100148
+step: 118	loss: 5994.033980369568	speed (wps):19207.09828717249
+step: 154	loss: 7791.15339756012	speed (wps):19231.595887172054
+step: 190	loss: 9585.003294944763	speed (wps):19241.20552234743
+step: 226	loss: 11369.849634170532	speed (wps):19262.07391805656
+step: 262	loss: 13136.19179725647	speed (wps):19224.31872887238
+step: 298	loss: 14927.97209739685	speed (wps):19168.375937856807
+step: 334	loss: 16725.68346977234	speed (wps):19147.484540140784
+epoch: 8	train ppl: 147.46936995111133	val ppl: 141.95829740000391	best val: 141.95829740000391	time (s) spent in epoch: 50.74666452407837
+
+EPOCH 9 ------------------
+step: 10	loss: 556.165280342102	speed (wps):18267.419682673037
+step: 46	loss: 2351.6454362869263	speed (wps):19133.326087324116
+step: 82	loss: 4153.897986412048	speed (wps):19255.45005836555
+step: 118	loss: 5927.00174331665	speed (wps):19299.444602535164
+step: 154	loss: 7702.562246322632	speed (wps):19289.662225844357
+step: 190	loss: 9475.524988174438	speed (wps):19296.652201847475
+step: 226	loss: 11242.870841026306	speed (wps):19318.429317595674
+step: 262	loss: 12989.626216888428	speed (wps):19324.049888978483
+step: 298	loss: 14763.975520133972	speed (wps):19325.598067695453
+step: 334	loss: 16542.368111610413	speed (wps):19290.223091209897
+epoch: 9	train ppl: 139.69546329206005	val ppl: 138.28882969509908	best val: 138.28882969509908	time (s) spent in epoch: 50.49899649620056
+
+DONE
+
+Saving learning curves to GRU_ADAM_model=GRU_optimizer=ADAM_initial_lr=0.001_batch_size=256_seq_len=10_hidden_size=1000_num_layers=3_dp_keep_prob=0.3_num_epochs=10_0/learning_curves.npy
+--------------------Short sentences--------------------
+the desperately powerhouse will be brought down to no collar
+
+a ton that specialists would go in a long modify
+
+an indicator the nation 's time gives a <unk> change
+
+he acknowledged she and his affidavits to face much as
+
+she adopted a aide to <unk> a director of the
+
+it likes that in N accounted of more easy to
+
+they wohlstetter because they are industry and the usair team
+
+why anytime english but know but he will buy an
+
+how ramirez but blacks will be available yesterday david scott
+
+to medium <eos> exxon <unk> co. insurance printer and '
+
+--------------------Long sentences--------------------
+the child-care authority for privately care as wooing <unk> domestic operations <eos> among the last level a debate by <unk>
+
+a thousand creditors is <unk> guilty <eos> because donald edgar very the state-owned company in young research <unk> that chrysler
+
+an concentration in the previous smoke to a foundation each <eos> their addition to be recently audience of the his
+
+he would wait just buy-out markets <eos> the <unk> this opportunities the nation which has refused to retirement a capital
+
+she 'd still something said away <eos> even warner still and johnson mesa executive ga. stone said it needs to
+
+it concedes a <unk> program to provide fire to the day <eos> paribas officials reportedly have been losing a <unk>
+
+they underwrite the drop to spend complete allowed it <eos> essentially nothing owns this year mr. boren chairman with the
+
+why everybody is made to some priority he <eos> said even a if we is not looking out toward congress
+
+how directed charges speaking <eos> scientists 's <unk> activity to function between the other life <eos> mrs. marcos lives the
+
+to seek some of fewer computers they can increase prices <eos> but over N cash withdrawals in its after-tax interest
+
