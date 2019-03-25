@@ -216,18 +216,47 @@ class RNN(nn.Module
             - Sampled sequences of tokens
                         shape: (generated_seq_len, batch_size)
         """
-        # TODO ========================
-        # samples = torch.Tensor(generated_seq_len, batch_size)
-        # samples[0] = self.embedding(input)
-        # for seq in range(generated_seq_len):
-        #     for l in range(self.num_layers):
-        #         hidden[l] = self.recurrent_layers[l](torch.cat(
-        #             [hidden[l], samples[seq]], 0))
-        #         if l < self.num_layers - 1:
-        #             samples[seq] = self.dropout_layers[l](hidden[l])
-        #         samples[seq] = self.linear_layer(samples[seq])
-        #     if seq < generated_seq_len - 1:
-        #         samples[seq + 1] = samples[seq]
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.hidden_layers = hidden.to(device)
+
+        samples = torch.zeros(self.batch_size, generated_seq_len).to(device)
+
+        for i, s in enumerate(input):
+            samples[i][0] = s
+
+        emb_sample = self.embedding(
+            torch.LongTensor(input + [0] * (self.batch_size - len(input))))
+
+        update_logits = []
+        for timestep in range(generated_seq_len - 1):
+            update_hidden = []
+
+            dropout_emb = emb_sample
+            concat = torch.cat([self.hidden_layers[0], dropout_emb], 1)
+            pre_activation = self.recurrent_layers[0](concat)
+            activation = self.recurrent_activation(pre_activation)
+            output = self.dropout_layers[1](activation)
+
+            update_hidden.append(activation)
+
+            for l in range(1, self.num_layers):
+                concat = torch.cat([self.hidden_layers[l], output], 1)
+                pre_activation = self.recurrent_layers[l](concat)
+                activation = self.recurrent_activation(pre_activation)
+                output = activation
+                update_hidden.append(activation)
+
+            logit = self.linear_layer(output)
+            update_logits.append(logit)
+
+            prediction = F.softmax(logit)
+            word_samples = torch.distributions.Categorical(prediction).sample()
+            for i, s in enumerate(word_samples):
+                samples[i][timestep + 1] = s
+
+            emb_sample = self.embedding(word_samples)
+            self.hidden_layers = torch.stack(update_hidden)
+
         return samples
 
 
