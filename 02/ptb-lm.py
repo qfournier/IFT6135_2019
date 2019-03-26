@@ -106,7 +106,8 @@ parser = argparse.ArgumentParser(description='PyTorch Penn Treebank Language Mod
 
 # Arguments you may need to set to run different experiments in 4.1 & 4.2.
 parser.add_argument('--data', type=str, default='data',
-                    help='location of the data corpus')
+                    help='location of the data corpus. We suggest you change the default\
+                    here, rather than passing as an argument, to avoid long file paths.')
 parser.add_argument('--model', type=str, default='GRU',
                     help='type of recurrent net (RNN, GRU, TRANSFORMER)')
 parser.add_argument('--optimizer', type=str, default='SGD_LR_SCHEDULE',
@@ -123,7 +124,7 @@ parser.add_argument('--hidden_size', type=int, default=200,
 parser.add_argument('--save_best', action='store_true',
                     help='save the model for the best validation performance')
 parser.add_argument('--num_layers', type=int, default=2,
-                    help='number of LSTM layers')
+                    help='number of hidden layers in RNN/GRU, or number of transformer blocks in TRANSFORMER')
 
 # Other hyperparameters you may want to tune in your exploration
 parser.add_argument('--emb_size', type=int, default=200,
@@ -131,7 +132,8 @@ parser.add_argument('--emb_size', type=int, default=200,
 parser.add_argument('--num_epochs', type=int, default=40,
                     help='number of epochs to stop after')
 parser.add_argument('--dp_keep_prob', type=float, default=0.35,
-                    help='dropout *keep* probability (dp_keep_prob=0 means no dropout')
+                    help='dropout *keep* probability. drop_prob = 1-dp_keep_prob \
+                    (dp_keep_prob=1 means no dropout)')
 
 # Arguments that you may want to make use of / implement more code for
 parser.add_argument('--debug', action='store_true') 
@@ -373,7 +375,8 @@ def run_epoch(model, data, is_train=False, lr=1.0):
     costs = 0.0
     iters = 0
     losses = []
-
+    loss_avg = []
+    
     # LOOP THROUGH MINIBATCHES
     for step, (x, y) in enumerate(ptb_iterator(data, model.batch_size, model.seq_len)):
         if args.model == 'TRANSFORMER':
@@ -395,6 +398,19 @@ def run_epoch(model, data, is_train=False, lr=1.0):
         # and all time-steps of the sequences.
         # For problem 5.3, you will (instead) need to compute the average loss 
         #at each time-step separately. 
+        if is_train:
+            tot_loss_avg=0
+        else:
+            loss_minibatch = []
+            for i in range (targets.size()[0]):
+                target_s = targets[i]
+                outputs_s = outputs[i]
+    #            time_loss = loss_fn(outputs_s, target_s)
+                loss_minibatch.append( loss_fn(outputs_s, target_s).data.item())
+        
+            loss_avg.append(loss_minibatch)
+            tot_loss_avg = np.mean(loss_avg,0)
+        
         loss = loss_fn(outputs.contiguous().view(-1, model.vocab_size), tt)
         costs += loss.data.item() * model.seq_len
         losses.append(costs)
@@ -414,7 +430,8 @@ def run_epoch(model, data, is_train=False, lr=1.0):
                 print('step: '+ str(step) + '\t' \
                     + 'loss: '+ str(costs) + '\t' \
                     + 'speed (wps):' + str(iters * model.batch_size / (time.time() - start_time)))
-    return np.exp(costs / iters), losses
+    
+    return np.exp(costs / iters), losses, tot_loss_avg
 
 
 
@@ -447,10 +464,10 @@ for epoch in range(num_epochs):
         lr = lr * lr_decay # decay lr if it is time
 
     # RUN MODEL ON TRAINING DATA
-    train_ppl, train_loss = run_epoch(model, train_data, True, lr)
+    train_ppl, train_loss, avg_losses = run_epoch(model, train_data, True, lr)
 
     # RUN MODEL ON VALIDATION DATA
-    val_ppl, val_loss = run_epoch(model, valid_data)
+    val_ppl, val_loss, avg_losses = run_epoch(model, valid_data)
 
 
     # SAVE MODEL IF IT'S THE BEST SO FAR
@@ -482,6 +499,8 @@ for epoch in range(num_epochs):
     print(log_str)
     with open (os.path.join(args.save_dir, 'log.txt'), 'a') as f_:
         f_.write(log_str+ '\n')
+    fl_name = 'losses_'+str(epoch)+'.npy'    
+    np.save(os.path.join(args.save_dir, fl_name), {'losses':avg_losses})
 
 # SAVE LEARNING CURVES
 lc_path = os.path.join(args.save_dir, 'learning_curves.npy')
